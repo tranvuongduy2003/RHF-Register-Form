@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import CheckboxHook from "../checkbox/CheckboxHook";
+import DropdownHook from "../dropdown/DropdownHook";
 import InputHook from "../input/InputHook";
 import RadioHook from "../radio/RadioHook";
 
@@ -74,6 +75,9 @@ const RegisterHook = () => {
             <span>Female</span>
           </div>
         </div>
+      </div>
+      <div className="flex flex-col gap-3 mb-5">
+        <DropdownHook control={control} name="job"></DropdownHook>
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <CheckboxHook
