@@ -5,15 +5,36 @@ import DropdownHook from "../dropdown/DropdownHook";
 import InputHook from "../input/InputHook";
 import RadioHook from "../radio/RadioHook";
 
+const dropdownData = [
+  {
+    id: 1,
+    value: "teacher",
+    text: "Teacher",
+  },
+  {
+    id: 2,
+    value: "developer",
+    text: "Developer",
+  },
+  {
+    id: 3,
+    value: "doctor",
+    text: "Doctor",
+  },
+];
+
 const RegisterHook = () => {
   const {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
+    getValues,
   } = useForm();
   const onSubmitHandler = (values) => {
     console.log(values);
   };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmitHandler)}
@@ -77,7 +98,13 @@ const RegisterHook = () => {
         </div>
       </div>
       <div className="flex flex-col gap-3 mb-5">
-        <DropdownHook control={control} name="job"></DropdownHook>
+        <DropdownHook
+          control={control}
+          setValue={setValue}
+          name="job"
+          data={dropdownData}
+          dropdownLabel="Select your job"
+        ></DropdownHook>
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <CheckboxHook
