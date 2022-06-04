@@ -4,6 +4,8 @@ import CheckboxHook from "../checkbox/CheckboxHook";
 import DropdownHook from "../dropdown/DropdownHook";
 import InputHook from "../input/InputHook";
 import RadioHook from "../radio/RadioHook";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 const dropdownData = [
   {
@@ -23,16 +25,62 @@ const dropdownData = [
   },
 ];
 
+const schema = yup.object({
+  username: yup.string().required("Please enter your username"),
+  email: yup
+    .string()
+    .email("Please enter valid email address")
+    .required("Please enter your email address"),
+  password: yup
+    .string()
+    .min(8, "Must be 8 or more characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      {
+        message:
+          "Must be at least 1 uppercase, 1 lowercase, 1 number and 1 special character",
+      }
+    )
+    .required("Please enter your password"),
+  gender: yup
+    .string()
+    .required("Please select your gender")
+    .oneOf(["male", "female"], "You can only select male or female"),
+  job: yup
+    .string()
+    .required("Please select your job")
+    .oneOf(dropdownData.map((item) => item.value)),
+  term: yup.boolean().required("Please accept your terms and conditions"),
+});
+
 const RegisterHook = () => {
   const {
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isSubmitting },
     control,
     setValue,
     getValues,
-  } = useForm();
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+  });
   const onSubmitHandler = (values) => {
-    console.log(values);
+    if (!isValid) return;
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+        console.log(values);
+        reset({
+          username: "",
+          email: "",
+          password: "",
+          gender: "",
+          job: "",
+          term: false,
+        });
+      }, 3000);
+    });
   };
 
   return (
@@ -52,7 +100,9 @@ const RegisterHook = () => {
           type="text"
           control={control}
         ></InputHook>
-        <p className="text-red-500 text-sm">Please enter your username</p>
+        {errors.username && (
+          <p className="text-red-500 text-sm">{errors.username.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <label htmlFor="email" className="cursor-pointer font-medium">
@@ -65,6 +115,9 @@ const RegisterHook = () => {
           type="email"
           control={control}
         ></InputHook>
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <label htmlFor="password" className="cursor-pointer font-medium">
@@ -77,6 +130,9 @@ const RegisterHook = () => {
           type="password"
           control={control}
         ></InputHook>
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <label htmlFor="password" className="cursor-pointer font-medium">
@@ -96,6 +152,9 @@ const RegisterHook = () => {
             <span>Female</span>
           </div>
         </div>
+        {errors.gender && (
+          <p className="text-red-500 text-sm">{errors.gender.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <DropdownHook
@@ -105,6 +164,9 @@ const RegisterHook = () => {
           data={dropdownData}
           dropdownLabel="Select your job"
         ></DropdownHook>
+        {errors.job && (
+          <p className="text-red-500 text-sm">{errors.job.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-3 mb-5">
         <CheckboxHook
@@ -112,9 +174,21 @@ const RegisterHook = () => {
           text="I accept the terms and conditions"
           name="term"
         ></CheckboxHook>
+        {errors.term && (
+          <p className="text-red-500 text-sm">{errors.term.message}</p>
+        )}
       </div>
-      <button className="w-full p-5 bg-blue-500 text-white rounded-lg mt-5 font-semibold">
-        Submit
+      <button
+        className={`w-full p-5 bg-blue-500 text-white rounded-lg mt-5 font-semibold ${
+          isSubmitting && "opacity-50"
+        }`}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <div className="w-5 h-5 rounded-full border-2 border-white border-r-transparent animate-spin mx-auto"></div>
+        ) : (
+          "Submit"
+        )}
       </button>
     </form>
   );
