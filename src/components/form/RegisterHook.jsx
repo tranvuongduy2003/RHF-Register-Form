@@ -61,6 +61,7 @@ const RegisterHook = () => {
     setValue,
     getValues,
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
@@ -82,6 +83,8 @@ const RegisterHook = () => {
       }, 3000);
     });
   };
+
+  const watchGender = watch("gender");
 
   return (
     <form
@@ -140,7 +143,12 @@ const RegisterHook = () => {
         </label>
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-x-3">
-            <RadioHook control={control} name="gender" value="male"></RadioHook>
+            <RadioHook
+              control={control}
+              name="gender"
+              value="male"
+              checked={watchGender === "male"}
+            ></RadioHook>
             <span>Male</span>
           </div>
           <div className="flex items-center gap-x-3">
@@ -148,6 +156,7 @@ const RegisterHook = () => {
               control={control}
               name="gender"
               value="female"
+              checked={watchGender === "female"}
             ></RadioHook>
             <span>Female</span>
           </div>
